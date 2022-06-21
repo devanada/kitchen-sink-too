@@ -1,36 +1,33 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 import Layout from "../components/Layout";
 import CustomInput from "../components/CustomInput";
-import { fetchData } from "../utils/fetchData";
+import { apiRequest } from "../utils/apiRequest";
+import CustomButton from "../components/CustomButton";
 
 function Profile() {
   const navigate = useNavigate();
-  const token = useSelector((state) => state.token);
+  const [objSubmit, setObjSubmit] = useState("");
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [image, setImage] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchProfile();
-  }, [token]);
+    fetchData();
+  }, []);
 
-  const fetchDatas = () => {
-    fetchProfile();
-    fetchProfile();
-    fetchProfile();
-  };
-
-  const fetchProfile = async () => {
-    fetchData("profile", "get", {}, token)
+  const fetchData = async () => {
+    apiRequest("profile", "get", {})
       .then((res) => {
-        const { email, first_name, last_name } = res.data;
+        const { email, first_name, last_name, image } = res.data;
         setEmail(email);
         setFirstName(first_name);
         setLastName(last_name);
+        setImage(image);
       })
       .catch((err) => {
         const { response } = err;
@@ -42,22 +39,28 @@ function Profile() {
   };
 
   const handleSubmit = async (e) => {
+    setLoading(true);
     e.preventDefault();
-    // const body = {
-    //   email,
-    //   password,
-    // };
-    // fetchData(
-    //   "https://alta-kitchen-sink.herokuapp.com/api/v1/login",
-    //   "post",
-    //   body
-    // )
-    //   .then((res) => {
-    //     console.log(res);
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //   });
+    const formData = new FormData();
+    for (const key in objSubmit) {
+      formData.append(key, objSubmit[key]);
+    }
+    apiRequest("profile", "put", objSubmit, "multipart/form-data")
+      .then((res) => {
+        const { message } = res;
+        alert(message);
+        setObjSubmit({});
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+      .finally(() => fetchData());
+  };
+
+  const handleChange = (value, key) => {
+    let temp = { ...objSubmit };
+    temp[key] = value;
+    setObjSubmit(temp);
   };
 
   if (loading) {
@@ -65,30 +68,38 @@ function Profile() {
   } else {
     return (
       <Layout>
-        <div className="w-full h-full flex flex-col items-center justify-center">
+        <div className="w-full h-full flex items-center justify-center gap-4">
+          <img className="w-60 h-60" src={image} alt={image} />
           <form
-            className="flex flex-col gap-4"
+            className="flex flex-col gap-4 min-w-[40%]"
             onSubmit={(e) => handleSubmit(e)}
           >
+            <CustomInput
+              type="file"
+              onChange={(e) => {
+                setImage(URL.createObjectURL(e.target.files[0]));
+                handleChange(e.target.files[0], "image");
+              }}
+            />
             <CustomInput
               type="email"
               placeholder="Email"
               value={email}
-              disabled
+              onChange={(e) => handleChange(e.target.value, "email")}
             />
             <CustomInput
               type="text"
               placeholder="First Name"
               value={firstName}
-              disabled
+              onChange={(e) => handleChange(e.target.value, "first_name")}
             />
             <CustomInput
               type="text"
               placeholder="Last Name"
               value={lastName}
-              disabled
+              onChange={(e) => handleChange(e.target.value, "last_name")}
             />
-            <button>Submit</button>
+            <CustomButton id="btn-submit" label="Submit" loading={loading} />
           </form>
         </div>
       </Layout>

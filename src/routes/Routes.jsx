@@ -1,20 +1,20 @@
 import { useState, useEffect, useMemo } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import axios from "axios";
 
-import { reduxAction } from "../utils/redux/actions/action";
-import { ThemeContext } from "../utils/context";
+import { ThemeContext, TokenContext } from "../utils/context";
 import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
 import Profile from "../pages/Profile";
 
 axios.defaults.baseURL = "https://alta-kitchen-sink.herokuapp.com/api/v1/";
+// axios.defaults.baseURL = "http://192.168.1.132:4001/api/v1/";
 
 function App() {
-  const dispatch = useDispatch();
   const [theme, setTheme] = useState("light");
+  const [token, setToken] = useState(null);
   const background = useMemo(() => ({ theme, setTheme }), [theme]);
+  const jwtToken = useMemo(() => ({ token, setToken }), [token]);
 
   useEffect(() => {
     if (theme === "dark") {
@@ -25,23 +25,27 @@ function App() {
   }, [theme]);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      dispatch(reduxAction("SET_TOKEN", token));
-    }
-  }, []);
+    const getToken = localStorage.getItem("token") || "0";
+    setToken(getToken);
+    axios.defaults.headers.common["Authorization"] = `Bearer ${getToken}`;
+  }, [token]);
 
-  return (
-    <ThemeContext.Provider value={background}>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/profile" element={<Profile />} />
-        </Routes>
-      </BrowserRouter>
-    </ThemeContext.Provider>
-  );
+  if (token) {
+    return (
+      <TokenContext.Provider value={jwtToken}>
+        <ThemeContext.Provider value={background}>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Navigate to="/login" />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/profile" element={<Profile />} />
+            </Routes>
+          </BrowserRouter>
+        </ThemeContext.Provider>
+      </TokenContext.Provider>
+    );
+  }
 }
 
 export default App;

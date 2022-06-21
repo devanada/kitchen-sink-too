@@ -1,12 +1,11 @@
 import axios from "axios";
 
-const fetchData = async (url, method, body, token) => {
+const apiRequest = async (url, method, body, content_type) => {
   var config = {
     method,
     url,
     headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
+      "Content-Type": content_type ? content_type : "application/json",
     },
     data: body,
   };
@@ -15,4 +14,4 @@ const fetchData = async (url, method, body, token) => {
   return response.data;
 };
 
-export { fetchData };
+export { apiRequest };
