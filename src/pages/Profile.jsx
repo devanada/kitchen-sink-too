@@ -1,13 +1,15 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 
 import Layout from "../components/Layout";
 import CustomInput from "../components/CustomInput";
 import { apiRequest } from "../utils/apiRequest";
 import CustomButton from "../components/CustomButton";
+import { TokenContext } from "../utils/context";
 
 function Profile() {
+  const { setToken } = useContext(TokenContext);
   const navigate = useNavigate();
   const [objSubmit, setObjSubmit] = useState("");
   const [email, setEmail] = useState("");
@@ -32,6 +34,8 @@ function Profile() {
       .catch((err) => {
         const { response } = err;
         if (response.status === 401) {
+          localStorage.removeItem("token");
+          setToken("0");
           navigate("/login");
         }
       })
