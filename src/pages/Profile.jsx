@@ -32,12 +32,13 @@ function Profile() {
         setImage(image);
       })
       .catch((err) => {
-        const { response } = err;
-        if (response.status === 401) {
+        const { data } = err.response;
+        if ([401, 403].includes(data.code)) {
           localStorage.removeItem("token");
           setToken("0");
           navigate("/login");
         }
+        alert(data.message);
       })
       .finally(() => setLoading(false));
   };

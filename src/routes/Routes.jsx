@@ -27,7 +27,8 @@ function App() {
   useEffect(() => {
     const getToken = localStorage.getItem("token") || "0";
     setToken(getToken);
-    axios.defaults.headers.common["Authorization"] = `Bearer ${getToken}`;
+    if (getToken !== "0")
+      axios.defaults.headers.common["Authorization"] = `Bearer ${getToken}`;
   }, [token]);
 
   if (token) {

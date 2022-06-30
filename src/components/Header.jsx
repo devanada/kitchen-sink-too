@@ -8,7 +8,7 @@ import { ThemeContext, TokenContext } from "../utils/context";
 const Header = () => {
   const navigate = useNavigate();
   const { theme, setTheme } = useContext(ThemeContext);
-  const { setToken } = useContext(TokenContext);
+  const { token, setToken } = useContext(TokenContext);
 
   const handleTheme = (mode) => {
     setTheme(mode);
@@ -27,7 +27,9 @@ const Header = () => {
         Homepage
       </Link>
       <Menu className="bg-white rounded-full">
-        <Menu.Item onClick={() => navigate("/profile")}>Profile</Menu.Item>
+        {token !== "0" && (
+          <Menu.Item onClick={() => navigate("/profile")}>Profile</Menu.Item>
+        )}
         <Menu.Item
           onClick={() => handleTheme(theme === "dark" ? "light" : "dark")}
           rightSection={theme === "dark" ? <FaSun /> : <FaMoon />}
@@ -35,11 +37,15 @@ const Header = () => {
           {theme.charAt(0).toUpperCase() + theme.slice(1)}
         </Menu.Item>
 
-        <Divider />
+        {token !== "0" && (
+          <>
+            <Divider />
 
-        <Menu.Item color="red" onClick={() => handleLogout()}>
-          Logout
-        </Menu.Item>
+            <Menu.Item color="red" onClick={() => handleLogout()}>
+              Logout
+            </Menu.Item>
+          </>
+        )}
       </Menu>
     </nav>
   );
