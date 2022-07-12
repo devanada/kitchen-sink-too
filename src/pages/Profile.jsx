@@ -80,6 +80,7 @@ function Profile() {
             onSubmit={(e) => handleSubmit(e)}
           >
             <CustomInput
+              id="input-file"
               type="file"
               onChange={(e) => {
                 setImage(URL.createObjectURL(e.target.files[0]));
@@ -87,18 +88,21 @@ function Profile() {
               }}
             />
             <CustomInput
+              id="input-email"
               type="email"
               placeholder="Email"
               value={email}
               onChange={(e) => handleChange(e.target.value, "email")}
             />
             <CustomInput
+              id="input-first-name"
               type="text"
               placeholder="First Name"
               value={firstName}
               onChange={(e) => handleChange(e.target.value, "first_name")}
             />
             <CustomInput
+              id="input-last-name"
               type="text"
               placeholder="Last Name"
               value={lastName}

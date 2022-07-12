@@ -53,17 +53,22 @@ function Login() {
             onSubmit={(e) => handleSubmit(e)}
           >
             <CustomInput
+              id="input-email"
               type="email"
               placeholder="Email"
               onChange={(e) => setEmail(e.target.value)}
             />
             <CustomInput
+              id="input-password"
               type="password"
               placeholder="Password"
               onChange={(e) => setPassword(e.target.value)}
             />
             <p className="text-black dark:text-white">
-              Don't have an account? Register <Link to="/register">here!</Link>
+              Don't have an account? Register{" "}
+              <Link id="to-register" to="/register">
+                here!
+              </Link>
             </p>
             <CustomButton
               id="btn-login"

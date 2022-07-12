@@ -56,27 +56,31 @@ function Register() {
           onSubmit={(e) => handleSubmit(e)}
         >
           <CustomInput
+            id="inputEmail"
             type="email"
             placeholder="Email"
             onChange={(e) => setEmail(e.target.value)}
           />
           <CustomInput
+            id="inputFirstName"
             type="text"
             placeholder="First Name"
             onChange={(e) => setFirstName(e.target.value)}
           />
           <CustomInput
+            id="inputLastName"
             type="text"
             placeholder="Last Name"
             onChange={(e) => setLastName(e.target.value)}
           />
           <CustomInput
+            id="inputPassword"
             type="password"
             placeholder="Password"
             onChange={(e) => setPassword(e.target.value)}
           />
           <CustomButton
-            id="btn-login"
+            id="btn-register"
             label="Register"
             loading={loading || disabled}
           />
