@@ -1,16 +1,17 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 
+import { reduxAction } from "../utils/redux/actions/action";
 import Layout from "../components/Layout";
 import CustomInput from "../components/CustomInput";
 import { apiRequest } from "../utils/apiRequest";
 import CustomButton from "../components/CustomButton";
-import { TokenContext } from "../utils/context";
 
 function Profile() {
-  const { setToken } = useContext(TokenContext);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [objSubmit, setObjSubmit] = useState("");
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -35,7 +36,7 @@ function Profile() {
         const { data } = err.response;
         if ([401, 403].includes(data.code)) {
           localStorage.removeItem("token");
-          setToken("0");
+          dispatch(reduxAction("IS_LOGGED_IN", false));
           navigate("/login");
         }
         alert(data.message);
@@ -57,7 +58,8 @@ function Profile() {
         setObjSubmit({});
       })
       .catch((err) => {
-        console.log(err);
+        const { data } = err.response;
+        alert(data.message);
       })
       .finally(() => fetchData());
   };

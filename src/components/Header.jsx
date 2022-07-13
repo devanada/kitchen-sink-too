@@ -1,22 +1,26 @@
 import { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import { FaSun, FaMoon } from "react-icons/fa";
 import { Menu, Divider } from "@mantine/core";
 
-import { ThemeContext, TokenContext } from "../utils/context";
+import { reduxAction } from "../utils/redux/actions/action";
+import { ThemeContext } from "../utils/context";
 
 const Header = () => {
+  const isLoggedIn = useSelector((state) => state.isLoggedIn);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { theme, setTheme } = useContext(ThemeContext);
-  const { token, setToken } = useContext(TokenContext);
 
   const handleTheme = (mode) => {
     setTheme(mode);
+    localStorage.setItem("theme", mode);
   };
 
-  const handleLogout = () => {
-    setToken("0");
+  const handleLogout = async () => {
     localStorage.removeItem("token");
+    dispatch(reduxAction("IS_LOGGED_IN", false));
     navigate("/login");
     alert("You have been logged out");
   };
@@ -27,7 +31,7 @@ const Header = () => {
         Homepage
       </Link>
       <Menu className="bg-white rounded-full">
-        {token !== "0" && (
+        {isLoggedIn && (
           <Menu.Item id="to-profile" onClick={() => navigate("/profile")}>
             Profile
           </Menu.Item>
@@ -40,7 +44,7 @@ const Header = () => {
           {theme.charAt(0).toUpperCase() + theme.slice(1)}
         </Menu.Item>
 
-        {token !== "0" && (
+        {isLoggedIn && (
           <>
             <Divider />
 

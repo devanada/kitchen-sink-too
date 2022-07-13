@@ -1,13 +1,13 @@
 const initialState = {
-  token: null,
+  isLoggedIn: false,
 };
 
 export const reducer = (state = initialState, action) => {
   switch (action.type) {
-    case "SET_TOKEN":
+    case "IS_LOGGED_IN":
       return {
         ...state,
-        token: action.payload,
+        isLoggedIn: action.payload,
       };
     default:
       return state;
