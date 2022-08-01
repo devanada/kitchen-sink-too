@@ -34,7 +34,6 @@ function Register() {
     };
     apiRequest("register", "post", body)
       .then((res) => {
-        console.log(res);
         const { message, data } = res.data;
         if (data) {
           navigate("/login");
