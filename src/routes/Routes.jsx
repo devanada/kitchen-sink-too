@@ -4,17 +4,16 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 
-import { reduxAction } from "../utils/redux/actions/action";
+import { handleAuth } from "../utils/redux/reducers/reducer";
 import { ThemeContext, TokenContext } from "../utils/context";
 import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
 import Profile from "../pages/Profile";
 
-axios.defaults.baseURL = "https://alta-kitchen-sink.herokuapp.com/api/v1/";
-// axios.defaults.baseURL = "http://192.168.1.132:4001/api/v1/";
+axios.defaults.baseURL = "https://kitchen-sink-7e96.onrender.com/api/v1/";
 
 function App() {
-  const isLoggedIn = useSelector((state) => state.isLoggedIn);
+  const isLoggedIn = useSelector((state) => state.data.isLoggedIn);
   const dispatch = useDispatch();
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
   const [token, setToken] = useState(null);
@@ -32,9 +31,9 @@ function App() {
   useEffect(() => {
     const getToken = localStorage.getItem("token");
     if (getToken) {
-      dispatch(reduxAction("IS_LOGGED_IN", true));
+      dispatch(handleAuth(true));
     } else {
-      dispatch(reduxAction("IS_LOGGED_IN", false));
+      dispatch(handleAuth(false));
     }
     axios.defaults.headers.common["Authorization"] = getToken
       ? `Bearer ${getToken}`

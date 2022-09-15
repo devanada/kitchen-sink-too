@@ -1,18 +1,25 @@
+import { createSlice } from "@reduxjs/toolkit";
+
 const initialState = {
   isLoggedIn: false,
 };
 
-export const reducer = (state = initialState, action) => {
-  switch (action.type) {
-    case "IS_LOGGED_IN":
-      return {
-        ...state,
-        isLoggedIn: action.payload,
-      };
-    default:
-      return state;
-  }
+const sliceState = createSlice({
+  name: "state",
+  initialState: initialState,
+  reducers: {
+    handleAuth: (state, action) => {
+      state.isLoggedIn = action.payload;
+    },
+  },
+});
+
+const reducer = {
+  state: sliceState.reducer,
 };
+
+export const { handleAuth } = sliceState.actions;
+export default reducer;
 
 /*
 Fungsi reducer adalah sebuah function yang menerima 2 parameter, yaitu state dan action.

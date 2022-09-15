@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-import Layout from "../../components/Layout";
-import CustomInput from "../../components/CustomInput";
-import CustomButton from "../../components/CustomButton";
-import { apiRequest } from "../../utils/apiRequest";
+import Layout from "components/Layout";
+import CustomInput from "components/CustomInput";
+import CustomButton from "components/CustomButton";
+import { apiRequest } from "utils/apiRequest";
 
 function Register() {
   const navigate = useNavigate();

@@ -1,7 +1,11 @@
-import { legacy_createStore as createStore } from "redux";
-import { reducer } from "../reducers/reducer";
+import { configureStore } from "@reduxjs/toolkit";
+import reducer from "../reducers/reducer";
 
-export const store = createStore(reducer);
+export const store = configureStore({
+  reducer: {
+    data: reducer.state,
+  },
+});
 
 /*
 Fungsi createStore adalah sebuah function yang menerima 1 parameter, yaitu reducer.

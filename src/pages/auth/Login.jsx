@@ -2,11 +2,11 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 
-import { reduxAction } from "../../utils/redux/actions/action";
-import Layout from "../../components/Layout";
-import CustomInput from "../../components/CustomInput";
-import CustomButton from "../../components/CustomButton";
-import { apiRequest } from "../../utils/apiRequest";
+import { handleAuth } from "utils/redux/reducers/reducer";
+import Layout from "components/Layout";
+import CustomInput from "components/CustomInput";
+import CustomButton from "components/CustomButton";
+import { apiRequest } from "utils/apiRequest";
 
 function Login() {
   const navigate = useNavigate();
@@ -35,7 +35,7 @@ function Login() {
       .then((res) => {
         const { token } = res.data;
         localStorage.setItem("token", token);
-        dispatch(reduxAction("IS_LOGGED_IN", true));
+        dispatch(handleAuth(true));
         alert("Login Successful");
         navigate("/profile");
       })

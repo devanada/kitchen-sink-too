@@ -3,11 +3,11 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 
-import { reduxAction } from "../utils/redux/actions/action";
-import Layout from "../components/Layout";
-import CustomInput from "../components/CustomInput";
-import { apiRequest } from "../utils/apiRequest";
-import CustomButton from "../components/CustomButton";
+import { handleAuth } from "utils/redux/reducers/reducer";
+import Layout from "components/Layout";
+import CustomInput from "components/CustomInput";
+import { apiRequest } from "utils/apiRequest";
+import CustomButton from "components/CustomButton";
 
 function Profile() {
   const navigate = useNavigate();
@@ -36,7 +36,7 @@ function Profile() {
         const { data } = err.response;
         if ([401, 403].includes(data.code)) {
           localStorage.removeItem("token");
-          dispatch(reduxAction("IS_LOGGED_IN", false));
+          dispatch(handleAuth(false));
           navigate("/login");
         }
         alert(data.message);

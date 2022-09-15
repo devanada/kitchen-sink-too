@@ -4,11 +4,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { FaSun, FaMoon } from "react-icons/fa";
 import { Menu, Divider } from "@mantine/core";
 
-import { reduxAction } from "../utils/redux/actions/action";
+import { handleAuth } from "../utils/redux/reducers/reducer";
 import { ThemeContext } from "../utils/context";
 
 const Header = () => {
-  const isLoggedIn = useSelector((state) => state.isLoggedIn);
+  const isLoggedIn = useSelector((state) => state.data.isLoggedIn);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { theme, setTheme } = useContext(ThemeContext);
@@ -20,7 +20,7 @@ const Header = () => {
 
   const handleLogout = async () => {
     localStorage.removeItem("token");
-    dispatch(reduxAction("IS_LOGGED_IN", false));
+    dispatch(handleAuth(false));
     navigate("/login");
     alert("You have been logged out");
   };
