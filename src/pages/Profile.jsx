@@ -1,32 +1,31 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import withReactContent from "sweetalert2-react-content";
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import axios from "axios";
 
-import { handleAuth } from "utils/redux/reducers/reducer";
-import Layout from "components/Layout";
-import CustomInput from "components/CustomInput";
-import { apiRequest } from "utils/apiRequest";
+import Swal from "utils/Swal";
 import CustomButton from "components/CustomButton";
+import CustomInput from "components/CustomInput";
+import Layout from "components/Layout";
 
 function Profile() {
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const [objSubmit, setObjSubmit] = useState("");
-  const [email, setEmail] = useState("");
+  const MySwal = withReactContent(Swal);
+  const [loading, setLoading] = useState(true);
+  const [objSubmit, setObjSubmit] = useState({});
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [image, setImage] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [email, setEmail] = useState("");
 
   useEffect(() => {
     fetchData();
   }, []);
 
   const fetchData = async () => {
-    apiRequest("profile", "get", {})
+    axios
+      .get("profile")
       .then((res) => {
-        const { email, first_name, last_name, image } = res.data;
+        const { email, first_name, last_name, image } = res.data.data;
         setEmail(email);
         setFirstName(first_name);
         setLastName(last_name);
@@ -34,12 +33,11 @@ function Profile() {
       })
       .catch((err) => {
         const { data } = err.response;
-        if ([401, 403].includes(data.code)) {
-          localStorage.removeItem("token");
-          dispatch(handleAuth(false));
-          navigate("/login");
-        }
-        alert(data.message);
+        MySwal.fire({
+          title: "Failed",
+          text: data.message,
+          showCancelButton: false,
+        });
       })
       .finally(() => setLoading(false));
   };
@@ -51,15 +49,28 @@ function Profile() {
     for (const key in objSubmit) {
       formData.append(key, objSubmit[key]);
     }
-    apiRequest("profile", "put", objSubmit, "multipart/form-data")
+    axios
+      .put("profile", objSubmit, {
+        headers: {
+          header1: { "Content-Type": "multipart/form-data" },
+        },
+      })
       .then((res) => {
         const { message } = res;
-        alert(message);
+        MySwal.fire({
+          title: "Success",
+          text: message,
+          showCancelButton: false,
+        });
         setObjSubmit({});
       })
       .catch((err) => {
         const { data } = err.response;
-        alert(data.message);
+        MySwal.fire({
+          title: "Failed",
+          text: data.message,
+          showCancelButton: false,
+        });
       })
       .finally(() => fetchData());
   };
@@ -72,50 +83,49 @@ function Profile() {
 
   if (loading) {
     return <div>Loading...</div>;
-  } else {
-    return (
-      <Layout>
-        <div className="w-full h-full flex items-center justify-center gap-4">
-          <img className="w-60 h-60" src={image} alt={image} />
-          <form
-            className="flex flex-col gap-4 min-w-[40%]"
-            onSubmit={(e) => handleSubmit(e)}
-          >
-            <CustomInput
-              id="input-file"
-              type="file"
-              onChange={(e) => {
-                setImage(URL.createObjectURL(e.target.files[0]));
-                handleChange(e.target.files[0], "image");
-              }}
-            />
-            <CustomInput
-              id="input-email"
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => handleChange(e.target.value, "email")}
-            />
-            <CustomInput
-              id="input-first-name"
-              type="text"
-              placeholder="First Name"
-              value={firstName}
-              onChange={(e) => handleChange(e.target.value, "first_name")}
-            />
-            <CustomInput
-              id="input-last-name"
-              type="text"
-              placeholder="Last Name"
-              value={lastName}
-              onChange={(e) => handleChange(e.target.value, "last_name")}
-            />
-            <CustomButton id="btn-submit" label="Submit" loading={loading} />
-          </form>
-        </div>
-      </Layout>
-    );
   }
+  return (
+    <Layout>
+      <div className="w-full h-full flex items-center justify-center gap-4">
+        <img className="w-60 h-60" src={image} alt={image} />
+        <form
+          className="flex flex-col gap-4 min-w-[40%]"
+          onSubmit={(e) => handleSubmit(e)}
+        >
+          <CustomInput
+            id="input-file"
+            type="file"
+            onChange={(e) => {
+              setImage(URL.createObjectURL(e.target.files[0]));
+              handleChange(e.target.files[0], "image");
+            }}
+          />
+          <CustomInput
+            id="input-email"
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => handleChange(e.target.value, "email")}
+          />
+          <CustomInput
+            id="input-first-name"
+            type="text"
+            placeholder="First Name"
+            value={firstName}
+            onChange={(e) => handleChange(e.target.value, "first_name")}
+          />
+          <CustomInput
+            id="input-last-name"
+            type="text"
+            placeholder="Last Name"
+            value={lastName}
+            onChange={(e) => handleChange(e.target.value, "last_name")}
+          />
+          <CustomButton id="btn-submit" label="Submit" loading={loading} />
+        </form>
+      </div>
+    </Layout>
+  );
 }
 
 export default Profile;

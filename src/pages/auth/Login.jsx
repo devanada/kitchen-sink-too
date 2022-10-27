@@ -1,20 +1,25 @@
-import React, { useState, useEffect } from "react";
+import withReactContent from "sweetalert2-react-content";
 import { useNavigate, Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
+import { useCookies } from "react-cookie";
+import axios from "axios";
 
+import Swal from "utils/Swal";
 import { handleAuth } from "utils/redux/reducers/reducer";
-import Layout from "components/Layout";
-import CustomInput from "components/CustomInput";
 import CustomButton from "components/CustomButton";
-import { apiRequest } from "utils/apiRequest";
+import CustomInput from "components/CustomInput";
+import Layout from "components/Layout";
 
 function Login() {
+  const [cookies, setCookie] = useCookies(["token"]);
+  const MySwal = withReactContent(Swal);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
   const [disabled, setDisabled] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
 
   useEffect(() => {
     if (email && password) {
@@ -31,17 +36,26 @@ function Login() {
       email,
       password,
     };
-    apiRequest("login", "post", body)
+    axios
+      .post("login", body)
       .then((res) => {
-        const { token } = res.data;
-        localStorage.setItem("token", token);
+        const { data, message } = res.data;
+        setCookie("token", data.token, { path: "/" });
         dispatch(handleAuth(true));
-        alert("Login Successful");
+        MySwal.fire({
+          title: "Success",
+          text: message,
+          showCancelButton: false,
+        });
         navigate("/profile");
       })
       .catch((err) => {
         const { data } = err.response;
-        alert(data.message);
+        MySwal.fire({
+          title: "Failed",
+          text: data.message,
+          showCancelButton: false,
+        });
       })
       .finally(() => setLoading(false));
   };

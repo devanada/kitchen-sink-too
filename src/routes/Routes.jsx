@@ -1,24 +1,43 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useState, useEffect, useMemo } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
+import { useState, useEffect, useMemo } from "react";
+import { useDispatch } from "react-redux";
+import { useCookies } from "react-cookie";
 import axios from "axios";
 
-import { handleAuth } from "../utils/redux/reducers/reducer";
-import { ThemeContext, TokenContext } from "../utils/context";
-import Login from "../pages/auth/Login";
-import Register from "../pages/auth/Register";
-import Profile from "../pages/Profile";
+import { ThemeContext, TokenContext } from "utils/context";
+import { handleAuth } from "utils/redux/reducers/reducer";
+import Register from "pages/auth/Register";
+import Login from "pages/auth/Login";
+import Profile from "pages/Profile";
+import Home from "pages/Home";
 
 axios.defaults.baseURL = "https://kitchen-sink-7e96.onrender.com/api/v1/";
 
 function App() {
-  const isLoggedIn = useSelector((state) => state.data.isLoggedIn);
+  const [cookie, setCookie, removeCookie] = useCookies();
   const dispatch = useDispatch();
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
   const [token, setToken] = useState(null);
   const background = useMemo(() => ({ theme, setTheme }), [theme]);
   const jwtToken = useMemo(() => ({ token, setToken }), [token]);
+  const checkToken = cookie.token;
+
+  axios.interceptors.response.use(
+    function (response) {
+      return response;
+    },
+    function (error) {
+      const { data } = error.response;
+      if (
+        data === "Missing or malformed JWT" ||
+        [401, 403].includes(data.code)
+      ) {
+        removeCookie("token");
+      }
+      return Promise.reject(error);
+    }
+  );
 
   useEffect(() => {
     if (theme === "dark") {
@@ -28,37 +47,36 @@ function App() {
     }
   }, [theme]);
 
-  useEffect(() => {
-    const getToken = localStorage.getItem("token");
-    if (getToken) {
+  (function () {
+    if (checkToken) {
+      const { token } = cookie;
       dispatch(handleAuth(true));
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     } else {
       dispatch(handleAuth(false));
+      delete axios.defaults.headers.common["Authorization"];
     }
-    axios.defaults.headers.common["Authorization"] = getToken
-      ? `Bearer ${getToken}`
-      : "";
-  }, [isLoggedIn]);
+  })();
 
   return (
     <TokenContext.Provider value={jwtToken}>
       <ThemeContext.Provider value={background}>
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Navigate to="/login" />} />
+            <Route path="/" element={<Home />} />
             <Route
               path="/login"
-              element={isLoggedIn ? <Navigate to="/profile" /> : <Login />}
+              element={checkToken ? <Navigate to="/" /> : <Login />}
             />
             <Route
               path="/register"
-              element={isLoggedIn ? <Navigate to="/profile" /> : <Register />}
+              element={checkToken ? <Navigate to="/" /> : <Register />}
             />
             <Route
               path="/profile"
-              element={isLoggedIn ? <Profile /> : <Navigate to="/login" />}
+              element={checkToken ? <Profile /> : <Navigate to="/login" />}
             />
-            {/* <Route path="*" element={<Navigate to="/login" />} /> */}
+            <Route path="*" element={<Navigate to="/login" />} />
           </Routes>
         </BrowserRouter>
       </ThemeContext.Provider>

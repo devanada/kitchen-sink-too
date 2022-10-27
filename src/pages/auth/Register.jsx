@@ -1,19 +1,22 @@
+import withReactContent from "sweetalert2-react-content";
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
-import Layout from "components/Layout";
-import CustomInput from "components/CustomInput";
+import Swal from "utils/Swal";
 import CustomButton from "components/CustomButton";
-import { apiRequest } from "utils/apiRequest";
+import CustomInput from "components/CustomInput";
+import Layout from "components/Layout";
 
 function Register() {
+  const MySwal = withReactContent(Swal);
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [loading, setLoading] = useState(false);
   const [disabled, setDisabled] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [firstName, setFirstName] = useState("");
+  const [password, setPassword] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
 
   useEffect(() => {
     if (email && password && firstName && lastName) {
@@ -32,17 +35,26 @@ function Register() {
       first_name: firstName,
       last_name: lastName,
     };
-    apiRequest("register", "post", body)
+    axios
+      .post("register", body)
       .then((res) => {
         const { message, data } = res.data;
+        MySwal.fire({
+          title: "Success",
+          text: message,
+          showCancelButton: false,
+        });
         if (data) {
           navigate("/login");
         }
-        alert(message);
       })
       .catch((err) => {
         const { message } = err.response.data;
-        alert(message);
+        MySwal.fire({
+          title: "Failed",
+          text: message,
+          showCancelButton: false,
+        });
       })
       .finally(() => setLoading(false));
   };
