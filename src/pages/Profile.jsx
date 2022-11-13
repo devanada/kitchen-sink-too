@@ -50,9 +50,9 @@ function Profile() {
       formData.append(key, objSubmit[key]);
     }
     axios
-      .put("profile", objSubmit, {
+      .put("profile", formData, {
         headers: {
-          header1: { "Content-Type": "multipart/form-data" },
+          "Content-Type": "multipart/form-data",
         },
       })
       .then((res) => {
@@ -81,9 +81,6 @@ function Profile() {
     setObjSubmit(temp);
   };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
   return (
     <Layout>
       <div className="w-full h-full flex items-center justify-center gap-4">
