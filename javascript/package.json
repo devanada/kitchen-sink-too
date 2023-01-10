@@ -1,0 +1,52 @@
+{
+  "name": "kitchen-sink-too",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@headlessui/react": "^1.7.7",
+    "@reduxjs/toolkit": "^1.9.1",
+    "animate.css": "^4.1.1",
+    "axios": "^1.2.2",
+    "react": "^18.2.0",
+    "react-cookie": "^4.1.1",
+    "react-dom": "^18.2.0",
+    "react-icons": "^4.7.1",
+    "react-router-dom": "^6.6.2",
+    "react-scripts": "5.0.1",
+    "redux-persist": "^6.0.0",
+    "sweetalert2": "^11.6.16",
+    "sweetalert2-react-content": "^5.0.7",
+    "web-vitals": "^3.1.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.13",
+    "postcss": "^8.4.21",
+    "react-redux": "^8.0.5",
+    "redux": "^4.2.0",
+    "tailwindcss": "^3.2.4"
+  }
+}
